@@ -7,17 +7,8 @@ Lista de paquetes:
 package josebailon.clientecorreo.modelo;
 
 import com.sun.mail.pop3.POP3Store;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,18 +24,17 @@ import josebailon.clientecorreo.controlador.Controlador;
  * @author Jose Javier Bailon Ortiz
  */
 public class Modelo {
-
+    
     private Controlador control;
     private Configuracion config;
     private Almacen almacen;
- 
-
+    
     public void setControlador(Controlador c) {
         control = c;
         config = new Configuracion();
         almacen = new Almacen(this);
     }
-
+    
     public boolean cargarConfiguracion() {
         if (config.cargarConfiguracion()) {
             return configuracionCorrecta();
@@ -52,30 +42,34 @@ public class Modelo {
             return false;
         }
     }
-
+    
     private boolean configuracionCorrecta() {
         String usuario = config.getValor(Configuracion.K_USUARIO);
         return (usuario.length() > 3);
     }
-
+    
     public boolean guardarConfiguracion(Properties propiedades) {
         return config.guardarConfiguracion(propiedades);
     }
-
+    
     public Properties getConfig() {
         return config.getCopia();
     }
-
+    
     public void salir() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
     public List<Message> refrescarMensajes() {
         
         //descargar mensajes del servidor
         Message[] nuevosMensajes = null;
         try {
             Properties p = convertirPropiedadesAConfigConexion(this.config.getCopia());
+            //inicializar ruta de almacen
+            if (!almacen.setUsuario(p.getProperty(Configuracion.K_USUARIO)))
+                return null;
+            
             Session emailSession = Session.getInstance(p);
             // cogemos el contenedor para el protocolo 
             POP3Store emailStore = (POP3Store) emailSession.getStore();
@@ -92,22 +86,23 @@ public class Modelo {
             //cogemos los mensajes
             nuevosMensajes = emailFolder.getMessages();
             for (int i = 0; i < nuevosMensajes.length; i++) {
-                
-                almacen.guardarMensaje(nuevosMensajes[i],emailSession);
+                almacen.guardarMensaje(nuevosMensajes[i], emailSession);
             }
             //cerrando
             emailFolder.close(false);
             emailStore.close();
+            control.conectadoComo(p.getProperty(Configuracion.K_USUARIO));
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
         } catch (MessagingException e) {
-            e.printStackTrace();
+            control.errorConexion();
+            
         }
-        
+
         //devolver los mensajes que hay en el almacen
         return almacen.getMensajes();
     }
-
+    
     public int probarSmtp(Properties config) {
         Properties p = convertirPropiedadesAConfigConexion(config);
         //probar conexion smtp
@@ -127,7 +122,6 @@ public class Modelo {
     //4/0AeaYSHBZzyvlO1qs-pSJUFD-4EUwrsCDjlwVTEMTlFyspCJDqVMIPyqHCkYTNS6CQMiuHg
     //thxm gbhz cjxs fdiw
     public int probarPop3(Properties config) {
-
         
         Session s = getSesion();
         POP3Store store;
@@ -139,7 +133,7 @@ public class Modelo {
             String pass = config.getProperty(Configuracion.K_PASSWORD);
             store.connect(host, puerto, usuario, pass);
             store.close();
-
+            
         } catch (NoSuchProviderException ex) {
             String es = ex.getMessage();
             return 2500;
@@ -151,7 +145,7 @@ public class Modelo {
     }
     
     private Properties convertirPropiedadesAConfigConexion(Properties p) {
-
+        
         Properties config = new Properties();
         config.setProperty("mail.smtp.host", p.getProperty(Configuracion.K_HOST_SMTP));
         config.setProperty("mail.smtp.port", p.getProperty(Configuracion.K_PUERTO_SMTP));
@@ -174,7 +168,7 @@ public class Modelo {
         if (Boolean.parseBoolean(p.getProperty(Configuracion.K_TLS_POP3))) {
             config.setProperty("mail.store.protocol", "pop3s");
         }
-
+        
         config.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         config.setProperty("mail.pop3s.ssl.trust", "*");
         config.setProperty("mail.pop3s.auth", "true");
@@ -182,21 +176,57 @@ public class Modelo {
         config.putAll(p);
         return config;
     }
-
+    
     private Session crearSesion(Properties p) {
-
+        
         return Session.getInstance(p, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(p.getProperty(Configuracion.K_USUARIO), p.getProperty(Configuracion.K_PASSWORD));
             }
-
+            
         });
     }
-
-    
     
     Session getSesion() {
-        return Session.getInstance(convertirPropiedadesAConfigConexion(this.config.getCopia()));
+        Properties p = convertirPropiedadesAConfigConexion(this.config.getCopia());
+        return Session.getInstance(p,
+                new javax.mail.Authenticator() {            
+            
+            protected PasswordAuthentication getPasswordAuthentication() {                
+                return new PasswordAuthentication(p.getProperty(Configuracion.K_USUARIO), p.getProperty(Configuracion.K_PASSWORD));                
+            }            
+        }
+        );
     }
-
+    
+    public boolean enviarCorreo(String to, String asunto, String cuerpo) {
+        
+        try {            
+            Session s = getSesion();
+            MimeMessage message = new MimeMessage(s);            
+            message.setFrom(config.getValor(Configuracion.K_USUARIO));            
+            message.addRecipients(Message.RecipientType.TO, to);
+            message.setSubject(asunto);            
+            message.setText(cuerpo);            
+            Transport.send(message);   
+            control.conectadoComo(config.getValor(Configuracion.K_USUARIO));
+            return true;
+            
+        } catch (MessagingException e) {
+            
+            control.errorConexion();
+            
+            return false;
+        }        
+        
+    }
+    
+    public String getUsuario(){
+        String salida="";
+        Properties c = getConfig();
+        if (c!=null && c.contains(Configuracion.K_USUARIO))
+            salida= c.getProperty(Configuracion.K_USUARIO);
+        return salida;
+    }
+    
 }//end Modelo

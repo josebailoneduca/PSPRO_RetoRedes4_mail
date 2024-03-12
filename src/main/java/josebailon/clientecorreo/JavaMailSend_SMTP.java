@@ -1,6 +1,7 @@
 package josebailon.clientecorreo;
 
 import java.util.Properties;  
+import java.util.Random;
 import javax.mail.*;  
 import javax.mail.internet.*;  
 
@@ -23,10 +24,10 @@ public class JavaMailSend_SMTP {
 public static void start() {  
 
 	String host = "localhost";
-	final String user="root2@localhost"; 
-	final String password="12346"; 
+	final String user="jose2@localhost"; 
+	final String password="1234"; 
 
-	String to = "root12@localhost";
+	String to = "jose@localhost";
 	
 	//propiedades
 	Properties props = new Properties();
@@ -52,8 +53,8 @@ public static void start() {
 		 MimeMessage message = new MimeMessage(session);  
 		 message.setFrom(new InternetAddress(user));  
 		 message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
-		 message.setSubject("Saludos despues  con TSL desde jose 1 a jose 2");  
-		 message.setText("usando JavaMail API");  
+		 message.setSubject("Saludos despues  con TSL desde jose 1 a jose 2"+new Random().nextInt());  
+		 message.setText("usando JavaMail API "+new Random().nextInt());  
 		
 		 Transport.send(message);  
 		

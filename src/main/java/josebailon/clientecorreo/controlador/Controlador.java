@@ -34,6 +34,7 @@ public class Controlador {
     }
 
     public void iniciar() {
+        vista.setEstado("Cargando configuracion");
         if(!modelo.cargarConfiguracion())
             vista.pedirConfiguracion();
         else
@@ -49,7 +50,8 @@ public class Controlador {
     }
     
     public List<Message> getCorreos(){
-        return modelo.refrescarMensajes();
+        List<Message> l = modelo.refrescarMensajes();
+        return l;
     }
 
     public void salir() {
@@ -64,5 +66,20 @@ public class Controlador {
     public int probarPop3(Properties config){
         return modelo.probarPop3(config);
     }
+
+    public void errorConexion() {
+        vista.errorConexion();
+    }
+
+    public void conectadoComo(String nombre){
+        vista.setConectado(nombre);
+    }
+    
+    public boolean enviarCorreo(String to, String asunto, String cuerpo) {
+        boolean res= modelo.enviarCorreo(to,asunto,cuerpo);
+        return res;
+    }
+    
+
 
 }//end Controlador

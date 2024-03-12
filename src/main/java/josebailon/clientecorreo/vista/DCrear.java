@@ -6,26 +6,44 @@ Lista de paquetes:
  */
 package josebailon.clientecorreo.vista;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import josebailon.clientecorreo.controlador.Controlador;
 
 /**
  *
  * @author Jose Javier BO
  */
-public class DCrear extends javax.swing.JDialog {
+public class DCrear extends javax.swing.JDialog implements ActionListener {
 
     Controlador control;
-    
+
     /**
      * Creates new form DCrear
      */
-    public DCrear(java.awt.Frame parent, Controlador control,String destino,String asunto,String cuerpo) {
+    public DCrear(java.awt.Frame parent, Controlador control, String destino, String asunto, String cuerpo) {
         super(parent, true);
         initComponents();
         this.control = control;
-        if (destino!=null) inputDestino.setText(destino);
-        if (asunto!=null) inputAsunto.setText(asunto);
-        if (cuerpo!=null) inputCuerpo.setText(cuerpo);
+        if (destino != null) {
+            inputDestino.setText(destino);
+        }
+        if (asunto != null) {
+            inputAsunto.setText(asunto);
+        }
+        if (cuerpo != null) {
+            inputCuerpo.setText(cuerpo);
+        }
+        btnCancelar.addActionListener(this);
+        btnEnviar.addActionListener(this);
     }
 
     /**
@@ -40,13 +58,15 @@ public class DCrear extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         inputDestino = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnEnviar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
         inputAsunto = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         inputCuerpo = new javax.swing.JTextArea();
+        lbEstadoEnvio = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Crear mensaje");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Destino:");
@@ -54,13 +74,20 @@ public class DCrear extends javax.swing.JDialog {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Asunto:");
 
-        jButton1.setText("Enviar");
+        btnEnviar.setText("Enviar");
+        btnEnviar.setActionCommand("enviar");
 
-        jButton2.setText("Cancelar");
+        btnCancelar.setText("Cancelar");
+        btnCancelar.setActionCommand("cancelar");
 
         inputCuerpo.setColumns(20);
         inputCuerpo.setRows(5);
         jScrollPane1.setViewportView(inputCuerpo);
+
+        lbEstadoEnvio.setBackground(new java.awt.Color(255, 255, 255));
+        lbEstadoEnvio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbEstadoEnvio.setMinimumSize(new java.awt.Dimension(0, 30));
+        lbEstadoEnvio.setPreferredSize(new java.awt.Dimension(0, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -68,15 +95,16 @@ public class DCrear extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 258, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(200, 200, 200)
-                .addComponent(jButton2)
+                .addComponent(btnCancelar)
                 .addGap(0, 258, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lbEstadoEnvio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -98,27 +126,113 @@ public class DCrear extends javax.swing.JDialog {
                     .addComponent(jLabel2)
                     .addComponent(inputAsunto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbEstadoEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnEnviar)
+                    .addComponent(btnCancelar))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnEnviar;
     private javax.swing.JTextField inputAsunto;
     private javax.swing.JTextArea inputCuerpo;
     private javax.swing.JTextField inputDestino;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbEstadoEnvio;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String ac = e.getActionCommand();
+        switch (ac) {
+            case "cancelar" ->
+                this.dispose();
+            case "enviar" ->
+                enviarEmail();
+            default -> {
+            }
+        }
+    }
+
+    private void enviarEmail() {
+        String to = inputDestino.getText();
+        String asunto = inputAsunto.getText();
+        String cuerpo = inputCuerpo.getText();
+
+        if (to.length() < 0) {
+            infoMsg("Debe establecer un destinatario");
+            return;
+        }
+        if (asunto.length() < 0) {
+            infoMsg("Debe especificar un asunto");
+            return;
+        }
+        if (cuerpo.length() < 0) {
+            infoMsg("El cuerpo del mensaje está vacío");
+            return;
+        }
+        btnCancelar.setEnabled(false);
+        btnEnviar.setEnabled(false);
+        lbEstadoEnvio.setText("Enviando email");
+        new Enviador(to, asunto, cuerpo).execute();
+    }
+
+    public void respuestaEnvio(boolean res) {
+        btnCancelar.setEnabled(true);
+        btnEnviar.setEnabled(true);
+        lbEstadoEnvio.setText("");
+        if (res) {
+            infoMsg("Mensaje enviado");
+            this.dispose();
+        } else {
+            infoMsg("No se ha podido enviar el mensaje");
+
+        }
+    }
+
+    private void infoMsg(String msg) {
+        JOptionPane.showMessageDialog(rootPane, msg);
+    }
+
+    private class Enviador extends SwingWorker<Boolean, Void> {
+
+        private JLabel etiqueta;
+        String to, asunto, cuerpo;
+
+        public Enviador(String to, String asunto, String cuerpo) {
+            this.to = to;
+            this.asunto = asunto;
+            this.cuerpo = cuerpo;
+
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            return control.enviarCorreo(to, asunto, cuerpo);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                boolean resultado = get();
+                respuestaEnvio(resultado);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(DConfiguracion.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(DConfiguracion.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
 }

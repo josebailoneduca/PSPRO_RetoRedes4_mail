@@ -10,9 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -53,7 +50,7 @@ public class Configuracion {
         propiedades.setProperty(K_PUERTO_POP3, "110");
         propiedades.setProperty(K_PROTOCOLO_POP3, "TLSv1.2");
         propiedades.setProperty(K_TLS_POP3, "true");
-        propiedades.setProperty(K_MANTENER_EN_SERVIDOR, "true");
+        propiedades.setProperty(K_MANTENER_EN_SERVIDOR, "false");
         propiedades.setProperty(K_USUARIO, "");
         propiedades.setProperty(K_PASSWORD, "");
     }

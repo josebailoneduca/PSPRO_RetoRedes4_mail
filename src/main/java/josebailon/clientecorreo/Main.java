@@ -42,7 +42,7 @@ public class Main {
         Controlador c = new Controlador (v,m);
         c.iniciar();
 //        new ClienteSMTPConexion().start();
-//    	new JavaMailSend_SMTP().start();
+    	//new JavaMailSend_SMTP().start();
 //    	new JavaMailReceive_POP3().start();
 //        System.out.println(new File("./").getAbsolutePath());
         

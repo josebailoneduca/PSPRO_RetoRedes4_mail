@@ -13,7 +13,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.Message;
@@ -26,15 +28,14 @@ import javax.mail.internet.MimeMessage;
  * @author Jose Javier Bailon Ortiz
  */
 public class Almacen {
-
-    private static String ruta = "res/almacen/";
+    private static final String root="res/almacen/";
+    private String ruta = root;
     private ArrayList<Message> mensajes;
     Modelo modelo;
 
     public Almacen(Modelo modelo) {
         mensajes = new ArrayList<Message>();
         this.modelo = modelo;
-        leerMensajesDeDisco();
     }
 
     public ArrayList<Message> getMensajes() {
@@ -79,8 +80,7 @@ public class Almacen {
 
             int indice = directorio.listFiles().length;
             while (true) {
-                String nuevaRuta = ruta + indice + "_" + id + ".eml";
-                nuevaRuta = nuevaRuta.replaceAll("[^a-zA-Z0-9.-/\\\\]", "_");
+                String nuevaRuta = ruta + String.format("%05d", indice) + "_" + sanitizar(id) + ".eml";
                 if (new File(nuevaRuta).exists()) {
                     indice++;
                 } else {
@@ -140,5 +140,21 @@ public class Almacen {
             Logger.getLogger(Almacen.class.getName()).log(Level.SEVERE, null, ex);
         }
         return existe;
+    }
+
+    public boolean setUsuario(String nombre) {
+            ruta=root+sanitizar(nombre)+"/";
+            System.out.println(ruta);
+            File f = new File(ruta);
+            if (!f.exists()){
+                if(!f.mkdir())
+                return false;
+            }
+            leerMensajesDeDisco();
+            return true;
+    }
+    
+    private String sanitizar(String st){
+    return st.replaceAll("[^a-zA-Z0-9.-/\\\\@]", "_");
     }
 }//end Almacen

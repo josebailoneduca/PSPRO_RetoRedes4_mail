@@ -27,6 +27,8 @@ public class CorreoListModel extends AbstractListModel<Message>{
     
     @Override
     public int getSize() {
+        if (mensajes==null)
+            return 0;
         return mensajes.size();
     }
 

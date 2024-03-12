@@ -48,9 +48,13 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
     }
 
     public void actualizarCorreos() {
-        List<Message> correos = control.getCorreos();
-        listaCorreos.setModel(new CorreoListModel(correos));
-        listaCorreos.setCellRenderer(new CorreoListCellRenderer());
+        setEstado("Actualizando buzón");
+        new Thread(() -> {
+            List<Message> correos = control.getCorreos();
+            listaCorreos.setModel(new CorreoListModel(correos));
+            listaCorreos.setCellRenderer(new CorreoListCellRenderer());
+        }).start();
+
     }
 
     /**
@@ -83,10 +87,13 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
         jScrollPane1 = new javax.swing.JScrollPane();
         textCuerpo = new javax.swing.JTextArea();
         lbReplyto = new javax.swing.JLabel();
+        panelEstado = new javax.swing.JPanel();
+        lbEstado = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cliente de correto Jose Javier Bailón Ortiz 2º DAM");
 
         panelBotonera.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -136,24 +143,31 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
             .addGroup(panelLecturaActualLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbAsunto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbFrom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnResponder))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
                     .addGroup(panelLecturaActualLayout.createSequentialGroup()
                         .addComponent(lbReplyto)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                                .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                                        .addGap(21, 21, 21)
+                                        .addComponent(lbFrom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnResponder))
+                            .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbAsunto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         panelLecturaActualLayout.setVerticalGroup(
@@ -175,8 +189,7 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbReplyto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panelLecturaLayout = new javax.swing.GroupLayout(panelLectura);
@@ -193,10 +206,29 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
             .addGroup(panelLecturaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelLecturaActual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         panelCentral.setRightComponent(panelLectura);
+
+        panelEstado.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout panelEstadoLayout = new javax.swing.GroupLayout(panelEstado);
+        panelEstado.setLayout(panelEstadoLayout);
+        panelEstadoLayout.setHorizontalGroup(
+            panelEstadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelEstadoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lbEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelEstadoLayout.setVerticalGroup(
+            panelEstadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelEstadoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lbEstado, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -205,16 +237,19 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCentral)
+                    .addComponent(panelCentral, javax.swing.GroupLayout.DEFAULT_SIZE, 993, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelBotonera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addComponent(panelBotonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelBotonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelBotonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelCentral)
                 .addContainerGap())
@@ -236,12 +271,14 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbAsunto;
+    private javax.swing.JLabel lbEstado;
     private javax.swing.JLabel lbFrom;
     private javax.swing.JLabel lbReplyto;
     private javax.swing.JLabel lbTo;
     private javax.swing.JList<javax.mail.Message> listaCorreos;
     private javax.swing.JPanel panelBotonera;
     private javax.swing.JSplitPane panelCentral;
+    private javax.swing.JPanel panelEstado;
     private javax.swing.JPanel panelLectura;
     private javax.swing.JPanel panelLecturaActual;
     private javax.swing.JScrollPane scrollLista;
@@ -275,8 +312,9 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
             case "actualizarCorreos" ->
                 actualizarCorreos();
             case "crearCorreo" ->
-                crearCorreo(null,null,null);
-            case "responder" ->responder();
+                crearCorreo(null, null, null);
+            case "responder" ->
+                responder();
             case "salir" ->
                 salir();
             default -> {
@@ -294,17 +332,17 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
 
         if (resultado != null) {
             control.guardarConfiguracion(resultado);
+            actualizarCorreos();
         }
     }
 
     private void crearCorreo(String destino, String asunto, String cuerpo) {
-    
+
         DCrear d = new DCrear(this, control, destino, asunto, cuerpo);
         d.setLocationRelativeTo(this);
         d.setVisible(true);
     }
 
-    
     private void salir() {
         control.salir();
     }
@@ -312,25 +350,26 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
     @Override
     public void valueChanged(ListSelectionEvent e) {
         Message m = listaCorreos.getSelectedValue();
-
-        mostrarMensaje(m);
+        if (m != null) {
+            mostrarMensaje(m);
+        } else {
+            panelLecturaActual.setVisible(false);
+        }
     }
 
     private void mostrarMensaje(Message m) {
         try {
-            
-            
+
             Address[] from = m.getFrom();
             String asunto = m.getSubject();
             Address[] reply = m.getReplyTo();
             Address[] to = m.getAllRecipients();
             Address[] replyTo = m.getReplyTo();
-            
-                    
+
             String cuerpo = "";
             String tipo = m.getContentType();
-            if (tipo.indexOf("multipart/form-data")!=-1||tipo.indexOf("multipart/alternative")!=-1){
-            MimeMultipart partes = (MimeMultipart) m.getContent();
+            if (tipo.indexOf("multipart/form-data") != -1 || tipo.indexOf("multipart/alternative") != -1) {
+                MimeMultipart partes = (MimeMultipart) m.getContent();
                 for (int i = 0; i < partes.getCount(); i++) {
                     BodyPart bodyPart = partes.getBodyPart(i);
                     if (bodyPart.isMimeType("text/plain")) {
@@ -338,18 +377,18 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
                     }
 
                 }
-            }else{
-            cuerpo = m.getContent().toString();
+            } else {
+                cuerpo = m.getContent().toString();
             }
             panelLecturaActual.setVisible(true);
-            lbFrom.setText(Arrays.stream(from).map((Address t) ->{
-            String remitente=t.toString().trim();
-            return remitente.substring(remitente.indexOf(" ") + 1);
+            lbFrom.setText(Arrays.stream(from).map((Address t) -> {
+                String remitente = t.toString().trim();
+                return remitente.substring(remitente.indexOf(" ") + 1);
             }).collect(Collectors.joining(",")));
             lbTo.setText(Arrays.stream(to).map((t) -> t.toString()).collect(Collectors.joining(",")));
-            lbReplyto.setText(  Arrays.stream(replyTo).map((Address t) ->{
-            String remitente=t.toString().trim();
-            return remitente.substring(remitente.indexOf(" ") + 1);
+            lbReplyto.setText(Arrays.stream(replyTo).map((Address t) -> {
+                String remitente = t.toString().trim();
+                return remitente.substring(remitente.indexOf(" ") + 1);
             }).collect(Collectors.joining(",")));
             lbAsunto.setText(asunto);
             textCuerpo.setText(cuerpo);
@@ -362,8 +401,20 @@ public class Ventana extends javax.swing.JFrame implements ActionListener, ListS
 
     private void responder() {
         String destino = lbReplyto.getText();
-        String asunto = "RE: "+lbAsunto.getText();
-        String cuerpo = "-----------------------MENSAJE REENVIADO ------------------------------------\n"+textCuerpo.getText();
+        String asunto = "RE: " + lbAsunto.getText();
+        String cuerpo = "-----------------------MENSAJE REENVIADO ------------------------------------\n" + textCuerpo.getText();
         crearCorreo(destino, asunto, cuerpo);
+    }
+
+    public void setEstado(String msg) {
+        lbEstado.setText(msg);
+    }
+
+    public void setConectado(String usuario) {
+        lbEstado.setText("Conectado como " + usuario);
+    }
+
+    public void errorConexion() {
+        lbEstado.setText("No se puede conectar");
     }
 }
