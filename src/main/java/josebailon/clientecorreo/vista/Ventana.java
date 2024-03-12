@@ -8,25 +8,50 @@ package josebailon.clientecorreo.vista;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.mail.Address;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
+import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import josebailon.clientecorreo.controlador.Controlador;
 
 /**
  *
  * @author Jose Javier BO
  */
-public class Ventana extends javax.swing.JFrame implements ActionListener{
+public class Ventana extends javax.swing.JFrame implements ActionListener, ListSelectionListener {
+
     Controlador control;
-    
-    
-    
+
     /**
      * Creates new form Ventana
      */
     public Ventana() {
         initComponents();
+        textCuerpo.setEditable(false);
+        lbReplyto.setVisible(false);
+        panelLecturaActual.setVisible(false);
         eventos();
-    }   
+        listaCorreos.setModel(new CorreoListModel(new ArrayList<Message>()));
+        listaCorreos.setCellRenderer(new CorreoListCellRenderer());
+    }
+
+    public void actualizarCorreos() {
+        List<Message> correos = control.getCorreos();
+        listaCorreos.setModel(new CorreoListModel(correos));
+        listaCorreos.setCellRenderer(new CorreoListCellRenderer());
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,6 +71,18 @@ public class Ventana extends javax.swing.JFrame implements ActionListener{
         panelCentral = new javax.swing.JSplitPane();
         scrollLista = new javax.swing.JScrollPane();
         listaCorreos = new javax.swing.JList<>();
+        panelLectura = new javax.swing.JPanel();
+        panelLecturaActual = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        lbFrom = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        lbTo = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        btnResponder = new javax.swing.JButton();
+        lbAsunto = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textCuerpo = new javax.swing.JTextArea();
+        lbReplyto = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -69,16 +106,97 @@ public class Ventana extends javax.swing.JFrame implements ActionListener{
         btnSalir.setActionCommand("salir");
         panelBotonera.add(btnSalir);
 
+        panelCentral.setDividerLocation(300);
         panelCentral.setDividerSize(10);
+        panelCentral.setResizeWeight(0.5);
 
-        listaCorreos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1\\npaso", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         scrollLista.setViewportView(listaCorreos);
 
         panelCentral.setLeftComponent(scrollLista);
+
+        jLabel1.setText("DE: ");
+
+        jLabel3.setText("PARA:");
+
+        jLabel5.setText("ASUNTO:");
+
+        btnResponder.setText("Responder");
+        btnResponder.setActionCommand("responder");
+
+        lbAsunto.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
+        textCuerpo.setColumns(20);
+        textCuerpo.setRows(5);
+        jScrollPane1.setViewportView(textCuerpo);
+
+        javax.swing.GroupLayout panelLecturaActualLayout = new javax.swing.GroupLayout(panelLecturaActual);
+        panelLecturaActual.setLayout(panelLecturaActualLayout);
+        panelLecturaActualLayout.setHorizontalGroup(
+            panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbAsunto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbFrom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnResponder))
+                    .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                        .addComponent(lbReplyto)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        panelLecturaActualLayout.setVerticalGroup(
+            panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLecturaActualLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(lbFrom)
+                    .addComponent(btnResponder))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(lbTo))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelLecturaActualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(lbAsunto))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbReplyto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout panelLecturaLayout = new javax.swing.GroupLayout(panelLectura);
+        panelLectura.setLayout(panelLecturaLayout);
+        panelLecturaLayout.setHorizontalGroup(
+            panelLecturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLecturaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panelLecturaActual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelLecturaLayout.setVerticalGroup(
+            panelLecturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLecturaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panelLecturaActual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        panelCentral.setRightComponent(panelLectura);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,7 +207,7 @@ public class Ventana extends javax.swing.JFrame implements ActionListener{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelCentral)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelBotonera, javax.swing.GroupLayout.DEFAULT_SIZE, 932, Short.MAX_VALUE)
+                        .addComponent(panelBotonera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -98,52 +216,69 @@ public class Ventana extends javax.swing.JFrame implements ActionListener{
                 .addContainerGap()
                 .addComponent(panelBotonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelCentral, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
+                .addComponent(panelCentral)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
- 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnConfiguracion;
     private javax.swing.JButton btnCrear;
+    private javax.swing.JButton btnResponder;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JList<String> listaCorreos;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbAsunto;
+    private javax.swing.JLabel lbFrom;
+    private javax.swing.JLabel lbReplyto;
+    private javax.swing.JLabel lbTo;
+    private javax.swing.JList<javax.mail.Message> listaCorreos;
     private javax.swing.JPanel panelBotonera;
     private javax.swing.JSplitPane panelCentral;
+    private javax.swing.JPanel panelLectura;
+    private javax.swing.JPanel panelLecturaActual;
     private javax.swing.JScrollPane scrollLista;
+    private javax.swing.JTextArea textCuerpo;
     // End of variables declaration//GEN-END:variables
 
     /**
      * Define el controlador
-     * @param c  El controlador
+     *
+     * @param c El controlador
      */
     public void setControlador(Controlador c) {
-        control=c;
+        control = c;
     }
-
- 
 
     private void eventos() {
         btnConfiguracion.addActionListener(this);
         btnActualizar.addActionListener(this);
         btnCrear.addActionListener(this);
         btnSalir.addActionListener(this);
+        btnResponder.addActionListener(this);
+        listaCorreos.addListSelectionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String ac = e.getActionCommand();
         switch (ac) {
-            case "abrirConfiguracion" -> pedirConfiguracion();
-            case "actualizarCorreos" -> actualizarCorreos();
-            case "crearCorreo" -> crearCorreo();
-            case "salir" -> salir();
+            case "abrirConfiguracion" ->
+                pedirConfiguracion();
+            case "actualizarCorreos" ->
+                actualizarCorreos();
+            case "crearCorreo" ->
+                crearCorreo(null,null,null);
+            case "responder" ->responder();
+            case "salir" ->
+                salir();
             default -> {
             }
 
@@ -152,21 +287,83 @@ public class Ventana extends javax.swing.JFrame implements ActionListener{
 
     public void pedirConfiguracion() {
         Properties config = control.getConfig();
-        
-        DConfiguracion d = new DConfiguracion(this, config);
+        DConfiguracion d = new DConfiguracion(this, config, control);
+        d.setLocationRelativeTo(this);
         d.setVisible(true);
+        Properties resultado = d.getResultado();
 
+        if (resultado != null) {
+            control.guardarConfiguracion(resultado);
+        }
     }
 
-    private void actualizarCorreos() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void crearCorreo(String destino, String asunto, String cuerpo) {
+    
+        DCrear d = new DCrear(this, control, destino, asunto, cuerpo);
+        d.setLocationRelativeTo(this);
+        d.setVisible(true);
     }
 
-    private void crearCorreo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
+    
     private void salir() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        control.salir();
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        Message m = listaCorreos.getSelectedValue();
+
+        mostrarMensaje(m);
+    }
+
+    private void mostrarMensaje(Message m) {
+        try {
+            
+            
+            Address[] from = m.getFrom();
+            String asunto = m.getSubject();
+            Address[] reply = m.getReplyTo();
+            Address[] to = m.getAllRecipients();
+            Address[] replyTo = m.getReplyTo();
+            
+                    
+            String cuerpo = "";
+            String tipo = m.getContentType();
+            if (tipo.indexOf("multipart/form-data")!=-1||tipo.indexOf("multipart/alternative")!=-1){
+            MimeMultipart partes = (MimeMultipart) m.getContent();
+                for (int i = 0; i < partes.getCount(); i++) {
+                    BodyPart bodyPart = partes.getBodyPart(i);
+                    if (bodyPart.isMimeType("text/plain")) {
+                        cuerpo += "\n" + bodyPart.getContent(); // without return, same text appears twice in my tests
+                    }
+
+                }
+            }else{
+            cuerpo = m.getContent().toString();
+            }
+            panelLecturaActual.setVisible(true);
+            lbFrom.setText(Arrays.stream(from).map((Address t) ->{
+            String remitente=t.toString().trim();
+            return remitente.substring(remitente.indexOf(" ") + 1);
+            }).collect(Collectors.joining(",")));
+            lbTo.setText(Arrays.stream(to).map((t) -> t.toString()).collect(Collectors.joining(",")));
+            lbReplyto.setText(  Arrays.stream(replyTo).map((Address t) ->{
+            String remitente=t.toString().trim();
+            return remitente.substring(remitente.indexOf(" ") + 1);
+            }).collect(Collectors.joining(",")));
+            lbAsunto.setText(asunto);
+            textCuerpo.setText(cuerpo);
+        } catch (IOException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void responder() {
+        String destino = lbReplyto.getText();
+        String asunto = "RE: "+lbAsunto.getText();
+        String cuerpo = "-----------------------MENSAJE REENVIADO ------------------------------------\n"+textCuerpo.getText();
+        crearCorreo(destino, asunto, cuerpo);
     }
 }
