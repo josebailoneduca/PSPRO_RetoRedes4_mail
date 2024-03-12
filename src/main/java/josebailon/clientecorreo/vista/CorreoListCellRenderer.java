@@ -94,7 +94,8 @@ public class CorreoListCellRenderer extends javax.swing.JPanel implements ListCe
             this.setBackground(Color.WHITE);
         Message msg = (Message)value;
         try {
-            lbRemitente.setText(msg.getFrom()[0].toString());
+            String remitente=msg.getFrom()[0].toString().trim();
+            lbRemitente.setText(remitente.substring(remitente.indexOf(" ") + 1));
             lbAsunto.setText(msg.getSubject());
         } catch (MessagingException ex) {
            // Logger.getLogger(CorreoListCellRenderer.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,0 +1,14 @@
+Received: from spooler by localhost (Mercury/32 v4.62); 10 Mar 2024 20:18:06 +0100
+X-Envelope-To: <root2@localhost>
+Return-path: <root1@localhost>
+Received: from JOSE-PC (127.0.0.1) by localhost (Mercury/32 v4.62) with ESMTP ID MG000002;
+   10 Mar 2024 20:18:02 +0100
+From: root1@localhost
+To: root2@localhost
+Message-ID: <1728790703.0.1710098277843.JavaMail.Jose@JOSE-PC>
+Subject: Saludos despues  con TSL desde jose 1 a jose 2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+usando JavaMail API

@@ -37,6 +37,7 @@ public class Main {
         
         
         Ventana v = new Ventana();
+        v.setLocationRelativeTo(null);
         Modelo m = new Modelo();
         Controlador c = new Controlador (v,m);
         c.iniciar();

@@ -23,10 +23,10 @@ public class JavaMailSend_SMTP {
 public static void start() {  
 
 	String host = "localhost";
-	final String user="root1@localhost"; 
-	final String password="1234"; 
+	final String user="root2@localhost"; 
+	final String password="12346"; 
 
-	String to = "root2@localhost";
+	String to = "root12@localhost";
 	
 	//propiedades
 	Properties props = new Properties();
@@ -47,7 +47,7 @@ public static void start() {
                   }  
 
                   });  
-
+        
 	try {  
 		 MimeMessage message = new MimeMessage(session);  
 		 message.setFrom(new InternetAddress(user));  

@@ -198,7 +198,7 @@ public class DConfiguracion extends javax.swing.JDialog implements ActionListene
 
         @Override
         protected void process(List<String> chunks) {
-            etiqueta.setText(chunks.getLast());
+            etiqueta.setText(chunks.get(chunks.size()-1));
         }
  
     }
@@ -233,6 +233,7 @@ public class DConfiguracion extends javax.swing.JDialog implements ActionListene
         btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Configurar cuenta");
         setResizable(false);
 
         java.awt.GridBagLayout jPanel1Layout = new java.awt.GridBagLayout();
@@ -315,7 +316,7 @@ public class DConfiguracion extends javax.swing.JDialog implements ActionListene
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         panelGeneral.add(inputPass, gridBagConstraints);
 
-        btnProbar.setText("Probar configuracion");
+        btnProbar.setText("Comprobar conexión");
         btnProbar.setActionCommand("probar");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -325,7 +326,6 @@ public class DConfiguracion extends javax.swing.JDialog implements ActionListene
         panelGeneral.add(btnProbar, gridBagConstraints);
 
         lbConexion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbConexion.setText("a");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 18;

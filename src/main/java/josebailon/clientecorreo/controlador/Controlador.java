@@ -7,7 +7,9 @@ Lista de paquetes:
 
 package josebailon.clientecorreo.controlador;
 
+import java.util.List;
 import java.util.Properties;
+import javax.mail.Message;
 import josebailon.clientecorreo.modelo.Configuracion;
 import josebailon.clientecorreo.modelo.Modelo;
 import josebailon.clientecorreo.vista.Ventana;
@@ -34,11 +36,33 @@ public class Controlador {
     public void iniciar() {
         if(!modelo.cargarConfiguracion())
             vista.pedirConfiguracion();
-        modelo.guardarConfiguracion();
+        else
+            vista.actualizarCorreos();
     }
 
     public Properties getConfig() {
         return modelo.getConfig();
+    }
+
+    public void guardarConfiguracion(Properties resultado) {
+        modelo.guardarConfiguracion(resultado);
+    }
+    
+    public List<Message> getCorreos(){
+        return modelo.refrescarMensajes();
+    }
+
+    public void salir() {
+        modelo.salir();
+        System.exit(0);
+    }
+
+    public int probarSmtp(Properties config) {
+        return modelo.probarSmtp(config);    
+    }
+    
+    public int probarPop3(Properties config){
+        return modelo.probarPop3(config);
     }
 
 }//end Controlador

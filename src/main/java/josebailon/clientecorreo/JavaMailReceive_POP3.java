@@ -48,6 +48,7 @@ public class JavaMailReceive_POP3{
 	System.out.println("Email Number " + (i + 1));
 	System.out.println("Subject: " + message.getSubject());
 	System.out.println("From: " + message.getFrom()[0]);
+	System.out.println("To: " + message.getRecipients(Message.RecipientType.TO));
 	System.out.println("Text: " + message.getContent().toString());
 	
 	
